@@ -127,29 +127,14 @@ float AARPGProtypeDevCharacter::GetSpeed() const
 	return GetVelocity().Size();
 }
 
-void AARPGProtypeDevCharacter::OnSaveAttack()
-{
-	if (bSaveAttacking)
-	{
-		bSaveAttacking = false;
-		ComboCount++;
-		Attack();
-	}
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString("OnSaveAttack"));
-}
-
-void AARPGProtypeDevCharacter::OnResetAttack()
-{
-	ComboCount = 0;
-	bSaveAttacking = false;
-	bIsAttacking = false;
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString("OnResetAttack"));
-}
-
 void AARPGProtypeDevCharacter::MoveForward(float Value)
 {
 	if ((Controller != NULL) && (Value != 0.0f))
 	{
+		if (bIsAttacking)
+		{
+			Value *= 0.1f;
+		}
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -164,6 +149,10 @@ void AARPGProtypeDevCharacter::MoveRight(float Value)
 {
 	if ( (Controller != NULL) && (Value != 0.0f) )
 	{
+		if (bIsAttacking)
+		{
+			Value *= 0.1f;
+		}
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -194,7 +183,17 @@ void AARPGProtypeDevCharacter::Attack()
 	{
 		bSaveAttacking = true;
 	}
-	bIsAttacking = true;
+	else
+	{
+		bIsAttacking = true;
+		AttackCombo();
+	}
+	//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString("OnResetAttack"));
+}
+
+/** Do attack combo. */
+void AARPGProtypeDevCharacter::AttackCombo()
+{
 	if (AttackComboMontage.Num() > 0)
 	{
 		int32 CurrentCount = ComboCount % AttackComboMontage.Num();
@@ -204,4 +203,21 @@ void AARPGProtypeDevCharacter::Attack()
 			PlayAnimMontage(AnimMontage);
 		}
 	}
+}
+
+void AARPGProtypeDevCharacter::OnSaveAttack()
+{
+	if (bSaveAttacking)
+	{
+		bSaveAttacking = false;
+		ComboCount++;
+		AttackCombo();
+	}
+}
+
+void AARPGProtypeDevCharacter::OnResetAttack()
+{
+	ComboCount = 0;
+	bSaveAttacking = false;
+	bIsAttacking = false;
 }

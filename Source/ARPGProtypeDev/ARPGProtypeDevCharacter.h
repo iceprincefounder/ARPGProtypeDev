@@ -80,9 +80,6 @@ protected:
 	/** Called for stop jumping input */
 	virtual void StopJumping() override;
 
-	/** Called for attack input */
-	void Attack();
-
 	/**
 	 * Called via input to turn at a given rate. 
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
@@ -100,6 +97,12 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+	/** Called for attack input */
+	void Attack();
+
+	/** Do attack combo. */
+	void AttackCombo();
 
 protected:
 	// APawn interface
